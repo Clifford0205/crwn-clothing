@@ -4,7 +4,6 @@ import './menu-item.styles.scss';
 
 // 有了 withRouter 就能拿到router傳進來的參數 這裡的 history,match就是
 const MenuItem = ({ title, imageUrl, size, history, linkUrl, match }) => {
-  console.log(match);
   return (
     <div
       className={`${size} menu-item`}
