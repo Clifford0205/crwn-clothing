@@ -1,4 +1,4 @@
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -26,13 +26,13 @@ class App extends React.Component {
         const userRef = await createUserProfileDocument(userAuth);
 
         userRef.onSnapshot(snapShot => {
-          console.log({ ...snapShot.data() });
           setCurrentUser({
             id: snapShot.id,
             ...snapShot.data(),
           });
         });
       }
+      // 這邊會比上面的if更先執行
       setCurrentUser(userAuth);
     });
   }
@@ -46,8 +46,18 @@ class App extends React.Component {
         <Header />
         <Switch>
           <Route exact path="/" component={Homepage} />
-          <Route exact path="/shop" component={ShopPage} />
-          <Route exact path="/signIn" component={SignInAndSignUpPage} />
+          <Route path="/shop" component={ShopPage} />
+          <Route
+            exact
+            path="/signIn"
+            render={() =>
+              this.props.currentUser ? (
+                <Redirect to="/" />
+              ) : (
+                <SignInAndSignUpPage />
+              )
+            }
+          />
 
           {/* <Route path="/hats" component={HatsPage} /> */}
         </Switch>
@@ -56,8 +66,12 @@ class App extends React.Component {
   }
 }
 
+const mapStateToProps = ({ user }) => ({
+  currentUser: user.currentUser,
+});
+
 const mapDispatchToProps = dispatch => ({
   setCurrentUser: user => dispatch(setCurrentUser(user)),
 });
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
