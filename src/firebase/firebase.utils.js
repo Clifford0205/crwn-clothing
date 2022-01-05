@@ -13,16 +13,22 @@ const config = {
 };
 
 export const createUserProfileDocument = async (userAuth, additionalData) => {
+  // 沒有登入時的狀態資料直接返回
   if (!userAuth) return;
+
+  // 用這個登入帳號的uid 去當作 firestore 的doc路徑
   const userRef = firestore.doc(`users/${userAuth.uid}`);
 
+  // 在該uid 的 firestore 的doc路徑下 調用get的方式讀取資料
   const snapShot = await userRef.get();
 
+  // 要是資料不存在 就把該筆會員寫進firestore裏面
   if (!snapShot.exits) {
     const { displayName, email } = userAuth;
     const createdAt = new Date();
 
     try {
+      //  用set的方式寫進firestore
       await userRef.set({
         displayName,
         email,
