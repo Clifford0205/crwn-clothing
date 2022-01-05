@@ -33,15 +33,19 @@ class SignUp extends React.Component {
         email,
         password
       );
+      // 成功建立帳號會自動幫我們登入
       // 登入後 把會員資料寫進 firestore裏面(要是firestore沒有的話)
+      // app.js的那個createUserProfileDocument會先被觸發 才觸發這個component
+      // 這邊調用 createUserProfileDocument 是因為要把 displayName 存進去 所以無法共用app.js的那個createUserProfileDocument
       await createUserProfileDocument(user, { displayName });
 
-      this.setState({
-        displayName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      });
+      // 因為被導去別的頁面 所以就不用在setState了
+      // this.setState({
+      //   displayName: '',
+      //   email: '',
+      //   password: '',
+      //   confirmPassword: '',
+      // });
     } catch (error) {
       console.log(error);
     }
