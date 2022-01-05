@@ -23,6 +23,7 @@ import { selectCurrentUser } from './redux/user/user.selectors';
 
 class App extends React.Component {
   unsubscribeFromAuth = null;
+
   componentDidMount() {
     const { setCurrentUser } = this.props;
 
@@ -44,6 +45,9 @@ class App extends React.Component {
 
   componentWillUnmount() {
     this.unsubscribeFromAuth();
+    // 參考資料
+    // https://firebase.google.com/docs/reference/js/v8/firebase.auth.Auth#onAuthStateChanged
+    // https://stackoverflow.com/questions/42762443/how-can-i-unsubscribe-to-onauthstatechanged
   }
   render() {
     return (
