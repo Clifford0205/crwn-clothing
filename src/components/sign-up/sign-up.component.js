@@ -28,10 +28,12 @@ class SignUp extends React.Component {
     }
 
     try {
+      // 成功建立帳號後 會返回一個object 取用裡面的user
       const { user } = await auth.createUserWithEmailAndPassword(
         email,
         password
       );
+      // 登入後 把會員資料寫進 firestore裏面(要是firestore沒有的話)
       await createUserProfileDocument(user, { displayName });
 
       this.setState({
@@ -57,7 +59,7 @@ class SignUp extends React.Component {
       <div className="sign-up">
         <h2 className="title">I do not have a account</h2>
         <span>Sign up with your email and password</span>
-        <form action="" className="sign-up-form" onSubmit={this.handleSubmit}>
+        <form className="sign-up-form" onSubmit={this.handleSubmit}>
           <FormInput
             type="text"
             name="displayName"
