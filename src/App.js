@@ -29,7 +29,6 @@ class App extends React.Component {
 
     // 進來網站啟動firebase訂閱auth的功能 隨時監聽是否是登入狀態
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
-      console.log(userAuth);
       if (userAuth) {
         // 登入後 把會員資料寫進 firestore裏面(要是firestore沒有的話)
         const userRef = await createUserProfileDocument(userAuth);
