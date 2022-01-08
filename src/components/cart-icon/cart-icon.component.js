@@ -26,6 +26,10 @@ const mapDispatchToProps = dispatch => ({
 //   ),
 // });
 
+// const mapStateToProps = state => ({
+//   itemCount: selectCartItemsCount(state),
+// });
+
 const mapStateToProps = createStructuredSelector({
   itemCount: selectCartItemsCount,
 });
