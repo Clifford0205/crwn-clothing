@@ -18,12 +18,18 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
 
   // 用這個登入帳號的uid 去當作 firestore 的doc路徑
   const userRef = firestore.doc(`users/${userAuth.uid}`);
+  // const collectionRef = firestore.collection('users');
 
+  // 就算路徑下沒有東西 firebase一樣會返回一個snapShot物件 要用get去驗證存不存在(exists)
   // 在該uid 的 firestore 的doc路徑下 調用get的方式讀取資料
   const snapShot = await userRef.get();
+  // const collectionSnapshot = await collectionRef.get();
+  // console.log({
+  //   collectionSnapshot: collectionSnapshot.docs.map(doc => doc.data()),
+  // });
 
   // 要是資料不存在 就把該筆會員寫進firestore裏面
-  if (!snapShot.exits) {
+  if (!snapShot.exists) {
     const { displayName, email } = userAuth;
     const createdAt = new Date();
 

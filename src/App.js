@@ -33,7 +33,7 @@ class App extends React.Component {
         // 登入後 把會員資料寫進 firestore裏面(要是firestore沒有的話)
         const userRef = await createUserProfileDocument(userAuth);
 
-        // 即時監聽變化並讀取 onSnapshot
+        // 即時監聽變化並讀取 snapshot
         userRef.onSnapshot(snapShot => {
           setCurrentUser({
             id: snapShot.id,
