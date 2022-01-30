@@ -11,9 +11,15 @@ import CheckoutPage from './pages/checkout/checkout.component';
 
 import Header from './components/header/header.component';
 
-import { auth, createUserProfileDocument } from './firebase/firebase.utils';
+import {
+  auth,
+  createUserProfileDocument,
+  addCollectionAndDocuments,
+} from './firebase/firebase.utils';
+
 import { setCurrentUser } from './redux/user/user.actions';
 import { selectCurrentUser } from './redux/user/user.selectors';
+import { selectCollectionsForPreview } from './redux/shop/shop.selectors';
 
 // const HatsPage = () => (
 //   <div>
@@ -25,7 +31,7 @@ class App extends React.Component {
   unsubscribeFromAuth = null;
 
   componentDidMount() {
-    const { setCurrentUser } = this.props;
+    const { setCurrentUser, collectionsArray } = this.props;
 
     // 進來網站啟動firebase訂閱auth的功能 隨時監聽是否是登入狀態
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async userAuth => {
@@ -45,6 +51,15 @@ class App extends React.Component {
       // 要是有登入這邊會比上面的await更先執行 要是userAuth不存在 則設定null 存在的話 這裡會設定userAuth一大包object
       // 但最後會設定onSnapshot裡面的
       setCurrentUser(userAuth);
+
+      // 用來一次性的把 shopData寫入firebase
+      // addCollectionAndDocuments(
+      //   'collections',
+      //   collectionsArray.map(({ title, items }) => ({
+      //     title,
+      //     items,
+      //   }))
+      // );
     });
   }
 
@@ -84,6 +99,9 @@ class App extends React.Component {
 
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser,
+
+  // 用來一次性的把 shopData寫入firebase
+  collectionsArray: selectCollectionsForPreview,
 });
 
 const mapDispatchToProps = dispatch => ({
