@@ -49,6 +49,25 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
   return userRef;
 };
 
+// 用來一次性寫入資料 把shopData寫進firebase裏面
+export const addCollectionAndDocuments = async (
+  collectionKey,
+  objectsToAdd
+) => {
+  const collectionRef = firestore.collection(collectionKey);
+
+  // 防止過程中有誤,資料全部成功 或全部不成功
+  const batch = firestore.batch();
+  objectsToAdd.forEach(obj => {
+    // 如果沒有指定文件 doc 的名稱，執行後會自動產生一個亂數代碼作為文件名稱。
+    // https://www.oxxostudio.tw/articles/201905/firebase-firestore.html
+    const newDocRef = collectionRef.doc();
+    batch.set(newDocRef, obj);
+  });
+
+  return await batch.commit();
+};
+
 firebase.initializeApp(config);
 
 export const auth = firebase.auth();
