@@ -1,13 +1,20 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
+import { createStructuredSelector } from 'reselect';
 import { connect } from 'react-redux';
 
+import { fetchCollectionsStartAsync } from '../../redux/shop/shop.actions';
 import {
-  firestore,
-  convertCollectionsSnapshotToMap,
-} from '../../firebase/firebase.utils';
+  selectIsCollectionFetching,
+  selectIsCollectionsLoaded,
+} from '../../redux/shop/shop.selectors';
 
-import { updateCollections } from '../../redux/shop/shop.actions';
+// import {
+//   firestore,
+//   convertCollectionsSnapshotToMap,
+// } from '../../firebase/firebase.utils';
+
+// import { updateCollections } from '../../redux/shop/shop.actions';
 
 import WithSpinner from '../../components/with-spinner/with-spinner.component';
 
@@ -43,15 +50,18 @@ const CollectionPageWithSpinner = WithSpinner(CollectionPage);
 // }
 
 class ShopPage extends React.Component {
-  state = {
-    loading: true,
-  };
+  // state = {
+  //   loading: true,
+  // };
 
-  unsubscribeFromSnapshot = null;
+  // unsubscribeFromSnapshot = null;
 
   componentDidMount() {
-    const { updateCollections } = this.props;
-    const collectionRef = firestore.collection('collections');
+    const { fetchCollectionsStartAsync, isCollectionFetching } = this.props;
+    console.log(isCollectionFetching);
+    fetchCollectionsStartAsync();
+    // const { updateCollections } = this.props;
+    // const collectionRef = firestore.collection('collections');
 
     // collectionRef.onSnapshot(async snapshot => {
     //   // 把回來的資料轉成我們要的資料型態
@@ -62,12 +72,12 @@ class ShopPage extends React.Component {
     //
 
     // 結果同上
-    collectionRef.get().then(snapshot => {
-      // 把回來的資料轉成我們要的資料型態
-      const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
-      updateCollections(collectionsMap);
-      this.setState({ loading: false });
-    });
+    // collectionRef.get().then(snapshot => {
+    //   // 把回來的資料轉成我們要的資料型態
+    //   const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
+    //   updateCollections(collectionsMap);
+    //   this.setState({ loading: false });
+    // });
 
     // 這個方法也能取得資料 但資料被埋得很深 不建議在此使用
     // fetch(
@@ -78,8 +88,8 @@ class ShopPage extends React.Component {
   }
 
   render() {
-    const { match } = this.props;
-    const { loading } = this.state;
+    const { match, isCollectionFetching, isCollectionsLoaded } = this.props;
+    // const { loading } = this.state;
     // 資料來源:https://stackoverflow.com/questions/59256109/difference-between-passing-component-to-route-as-prop-and-wrapping-component-in
     return (
       <div className="shop-page">
@@ -87,13 +97,19 @@ class ShopPage extends React.Component {
           exact
           path={`${match.path}`}
           render={props => (
-            <CollectionsOverviewWithSpinner isLoading={loading} {...props} />
+            <CollectionsOverviewWithSpinner
+              isLoading={isCollectionFetching}
+              {...props}
+            />
           )}
         />
         <Route
           path={`${match.path}/:collectionId`}
           render={props => (
-            <CollectionPageWithSpinner isLoading={loading} {...props} />
+            <CollectionPageWithSpinner
+              isLoading={!isCollectionsLoaded}
+              {...props}
+            />
           )}
         />
         {/* <Route exact path={`${match.path}`} component={CollectionsOverview} />
@@ -105,10 +121,15 @@ class ShopPage extends React.Component {
     );
   }
 }
-
-const mapDispatchToProps = dispatch => ({
-  updateCollections: collectionsMap =>
-    dispatch(updateCollections(collectionsMap)),
+const mapStateToProps = createStructuredSelector({
+  isCollectionFetching: selectIsCollectionFetching,
+  isCollectionsLoaded: selectIsCollectionsLoaded,
 });
 
-export default connect(null, mapDispatchToProps)(ShopPage);
+const mapDispatchToProps = dispatch => ({
+  fetchCollectionsStartAsync: () => dispatch(fetchCollectionsStartAsync()),
+  // updateCollections: collectionsMap =>
+  //   dispatch(updateCollections(collectionsMap)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(ShopPage);
