@@ -53,12 +53,28 @@ class ShopPage extends React.Component {
     const { updateCollections } = this.props;
     const collectionRef = firestore.collection('collections');
 
-    collectionRef.onSnapshot(async snapshot => {
+    // collectionRef.onSnapshot(async snapshot => {
+    //   // 把回來的資料轉成我們要的資料型態
+    //   const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
+    //   updateCollections(collectionsMap);
+    //   this.setState({ loading: false });
+    // });
+    //
+
+    // 結果同上
+    collectionRef.get().then(snapshot => {
       // 把回來的資料轉成我們要的資料型態
       const collectionsMap = convertCollectionsSnapshotToMap(snapshot);
       updateCollections(collectionsMap);
       this.setState({ loading: false });
     });
+
+    // 這個方法也能取得資料 但資料被埋得很深 不建議在此使用
+    // fetch(
+    //   'https://firestore.googleapis.com/v1/projects/crwn-db-de3e1/databases/(default)/documents/collections'
+    // )
+    //   .then(response => response.json())
+    //   .then(collections => console.log(collections));
   }
 
   render() {
